@@ -1,0 +1,22 @@
+{
+  "name": "angular-ht-advanced-filter",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Adrian Nowicki <adrian.nowicki@outlook.com",
+  "license": "",
+  "homepage": "https://github.com/hightest/angular-advanced-filter",
+  "main": "./src/advanced-filter.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test*",
+    "demo*",
+    "gruntFile.js",
+    "package.json"
+  ],
+  "dependencies": {
+    "angular": "latest",
+    "bootstrap": "latest"
+  }
+}
