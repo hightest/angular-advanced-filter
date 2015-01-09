@@ -1,0 +1,13 @@
+<div class="form-inline" ng-repeat="filter in filters">
+    <div class="form-group">
+        <select class="form-control" ng-model="filter.filter" ng-options="filterType.value as filterType.name for filterType in filterTypes" />
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="filter.field" ng-options="field.field as field.name for field in fields" />
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="text" ng-model="filter.value" />
+    </div>
+    <div class="form-group"><span class="glyphicon glyphicon-remove-circle" ng-click="remove($index)"></span></div>
+</div>
+<button type="button" class="btn btn-default" ng-click="add()">Dodaj filtr</button>

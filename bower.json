@@ -5,7 +5,10 @@
   "author": "Adrian Nowicki <adrian.nowicki@outlook.com",
   "license": "",
   "homepage": "https://github.com/hightest/angular-advanced-filter",
-  "main": "./src/advanced-filter.js",
+  "main": [
+    "dist/advanced-filter.js",
+    "dist/advanced-filter.min.js"
+  ],
   "ignore": [
     "**/.*",
     "node_modules",
