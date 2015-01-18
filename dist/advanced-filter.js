@@ -1,7 +1,7 @@
 /*!
  * angular-ht-advanced-filter
  * https://github.com/hightest/angular-advanced-filter
- * Version: 0.0.1 - 2015-01-18T12:47:22.371Z
+ * Version: 0.0.1 - 2015-01-18T17:52:38.669Z
  * License: 
  */
 
@@ -18,7 +18,7 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
         controller: function($scope, $filter) {
             var settings = $scope.htAdvancedFilter;
             var elements = settings.data;
-            var originalData = angular.copy(elements);
+            var filteredData = settings.filteredData;
             $scope.fields = [{name: "Wszędzie", value: "$"}];
             $scope.fields = $scope.fields.concat(settings.fields);
             $scope.select = settings.select;
@@ -46,6 +46,14 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                     value: ''
                 });
             };
+
+            $scope.$watch(function() {return elements;},
+                function(newVal, oldVal) {
+                    if (newVal == oldVal)
+                        return;
+                    filterData();
+                }
+            );
 
             var transformFilter = function (filters) {
                 var result = {};
@@ -80,13 +88,13 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
             };
 
             var filterData = function() {
-                var data = angular.copy(originalData);
+                var data = angular.copy(elements);
                 var filters = transformFilter($scope.filters);
                 filters = addSelectFilters(filters);
                 angular.forEach(filters, function (value, key) {
                     data = $filter(key)(data, value);
                 });
-                angular.copy(data, elements);
+                angular.copy(data, filteredData);
             };
 
             $scope.$watch('filters', function(newValue, oldValue) {

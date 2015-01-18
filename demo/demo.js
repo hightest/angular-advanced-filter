@@ -24,6 +24,7 @@ angular.module('demo', ['ht.advanced-filter']).controller('DemoCtrl', function (
             {name: "Wiek", value: "age"}
         ],
         data: $scope.clients,
+        filteredData: [],
         select: [
             {
                 name: "W wieku",
