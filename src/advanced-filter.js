@@ -8,6 +8,7 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
         },
         templateUrl: 'advanced-filter.html',
         controller: function($scope, $filter) {
+            var self = this;
             var settings = $scope.htAdvancedFilter;
             var elements = settings.data;
             var filteredData = settings.filteredData;
@@ -39,13 +40,11 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                 });
             };
 
-            $scope.$watch(function() {return elements;},
-                function(newVal, oldVal) {
-                    if (newVal == oldVal)
-                        return;
-                    filterData();
-                }
-            );
+            $scope.$watch(function() {return elements;}, function(newVal, oldVal) {
+                if (newVal == oldVal)
+                    return;
+                filterData();
+            }, true);
 
             var transformFilter = function (filters) {
                 var result = {};

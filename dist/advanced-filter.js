@@ -1,7 +1,7 @@
 /*!
  * angular-ht-advanced-filter
  * https://github.com/hightest/angular-advanced-filter
- * Version: 0.0.1 - 2015-01-18T17:52:38.669Z
+ * Version: 0.0.1 - 2015-01-18T20:25:14.027Z
  * License: 
  */
 
@@ -16,6 +16,7 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
         },
         templateUrl: 'advanced-filter.html',
         controller: function($scope, $filter) {
+            var self = this;
             var settings = $scope.htAdvancedFilter;
             var elements = settings.data;
             var filteredData = settings.filteredData;
@@ -47,13 +48,11 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                 });
             };
 
-            $scope.$watch(function() {return elements;},
-                function(newVal, oldVal) {
-                    if (newVal == oldVal)
-                        return;
-                    filterData();
-                }
-            );
+            $scope.$watch(function() {return elements;}, function(newVal, oldVal) {
+                if (newVal == oldVal)
+                    return;
+                filterData();
+            }, true);
 
             var transformFilter = function (filters) {
                 var result = {};
