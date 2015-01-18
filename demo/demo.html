@@ -6,12 +6,13 @@
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css" />
 </head>
 <body ng-controller="DemoCtrl">
-<div ht-advanced-filter="filterSettings" ng-model="clients"></div>
+<div ht-advanced-filter="filterSettings"></div>
 <div>
-    {{clients}}
+    {{filterSettings.data}}
 </div>
 <script src="../bower_components/jquery/dist/jquery.js"></script>
 <script src="../bower_components/angular/angular.js"></script>
+<script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 <script src="../dist/advanced-filter.js"></script>
 <script src="demo.js"></script>
 </body>

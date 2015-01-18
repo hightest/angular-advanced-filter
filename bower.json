@@ -21,6 +21,7 @@
   ],
   "dependencies": {
     "angular": "latest",
-    "bootstrap": "latest"
+    "bootstrap": "latest",
+    "angular-bootstrap": "latest"
   }
 }

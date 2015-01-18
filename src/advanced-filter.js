@@ -1,19 +1,20 @@
-angular.module('ht.advanced-filter', [])
+angular.module('ht.advanced-filter', ['ui.bootstrap'])
 
 .directive('htAdvancedFilter', function() {
     return {
         require: '^ngModel',
         scope: {
-            htAdvancedFilter: '=',
-            ngModel: '='
+            htAdvancedFilter: '='
         },
         templateUrl: 'advanced-filter.html',
         controller: function($scope, $filter) {
-            var elements = $scope.ngModel;
             var settings = $scope.htAdvancedFilter;
-            $scope.ngModel = elements;
-            $scope.fields = [{name: "Wszędzie", field: "$"}];
+            var elements = settings.data;
+            var originalData = angular.copy(elements);
+            $scope.fields = [{name: "Wszędzie", value: "$"}];
             $scope.fields = $scope.fields.concat(settings.fields);
+            $scope.select = settings.select;
+            $scope.filters = angular.isDefined(settings.filters) ? settings.filters : [];
 
             $scope.filterTypes = [
                 {
@@ -29,8 +30,6 @@ angular.module('ht.advanced-filter', [])
                     'value': 'greaterThanOrEqualTo'
                 }
             ];
-
-            $scope.filters = [];
 
             $scope.add = function() {
                 $scope.filters.push({
@@ -53,21 +52,53 @@ angular.module('ht.advanced-filter', [])
 
                 return result;
             };
+
+            var addSelectFilters = function(filters) {
+                var selectFilters = $scope.select;
+
+                angular.forEach(selectFilters, function(filter) {
+                    if (angular.isDefined(filter.selected) && filter.selected !== null) {
+                        var filterName = filter.selected.type;
+                        var filterField = filter.selected.field;
+                        var filterValue = filter.selected.value;
+
+                        if (!angular.isDefined(filters[filterName])) {
+                            filters[filterName] = {};
+                        }
+                        filters[filterName][filterField] = filterValue;
+                    }
+                });
+                return filters;
+            };
+
+            var filterData = function() {
+                var data = angular.copy(originalData);
+                var filters = transformFilter($scope.filters);
+                filters = addSelectFilters(filters);
+                angular.forEach(filters, function (value, key) {
+                    data = $filter(key)(data, value);
+                });
+                angular.copy(data, elements);
+            };
+
             $scope.$watch('filters', function(newValue, oldValue) {
                 if (oldValue == newValue)
                     return;
 
-                var data = angular.copy(elements);
-                var filters = transformFilter(newValue);
-                angular.forEach(filters, function (value, key) {
-                    data = $filter(key)(data, value);
-                });
-                $scope.ngModel = data;
+                filterData();
+            }, true);
+
+            $scope.$watch('select', function(newVal, oldVal) {
+                if (oldVal == newVal)
+                    return;
+                filterData();
             }, true);
 
             $scope.remove = function(index) {
                 $scope.filters.splice(index, 1);
             };
+
+            filterData();
         }
     };
 })
