@@ -53,7 +53,14 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                         if (angular.isUndefined(result[filter.filter])) {
                             result[filter.filter] = {};
                         }
-                        result[filter.filter][filter.field] = filter.value;
+                        if (angular.isDefined(result[filter.filter][filter.field])) {
+                            if (!Array.isArray(result[filter.filter][filter.field])) {
+                                result[filter.filter][filter.field] = [result[filter.filter][filter.field]];
+                            }
+                            result[filter.filter][filter.field].push(filter.value);
+                        } else {
+                            result[filter.filter][filter.field] = filter.value;
+                        }
                     }
                 });
 
@@ -64,18 +71,44 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                 var selectFilters = $scope.select;
 
                 angular.forEach(selectFilters, function(filter) {
-                    if (angular.isDefined(filter.selected) && filter.selected !== null) {
-                        var filterName = filter.selected.type;
-                        var filterField = filter.selected.field;
-                        var filterValue = filter.selected.value;
+                    angular.forEach(filter.options, function(option) {
+                        if (angular.isDefined(option.selected) && option.selected) {
+                            var filterName = option.type;
+                            var filterField = option.field;
+                            var filterValue = option.value;
 
-                        if (!angular.isDefined(filters[filterName])) {
-                            filters[filterName] = {};
+                            if (!angular.isDefined(filters[filterName])) {
+                                filters[filterName] = {};
+                            }
+                            if (angular.isDefined(filters[filterName][filterField]) && (filters[filterName][filterField].length > 0 || angular.isNumber(filters[filterName][filterField]))) {
+                                if (!Array.isArray(filters[filterName][filterField])) {
+                                    filters[filterName][filterField] = [filters[filterName][filterField]];
+                                }
+                                filters[filterName][filterField].push(filterValue);
+                            } else {
+                                filters[filterName][filterField] = filterValue;
+                            }
                         }
-                        filters[filterName][filterField] = filterValue;
-                    }
+                    });
                 });
                 return filters;
+            };
+
+            var getFlatObjects = function (object) {
+                var elements = [];
+                angular.forEach(object, function(value, key) {
+                    if (Array.isArray(value)) {
+                        angular.forEach(value, function(datum) {
+                            var flatObject = angular.copy(object);
+                            flatObject[key] = datum;
+                            elements = elements.concat(getFlatObjects(flatObject));
+                        });
+                    }
+                });
+                if (elements.length === 0) {
+                    elements.push(object);
+                }
+                return elements;
             };
 
             var filterData = function() {
@@ -83,7 +116,24 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                 var filters = transformFilter($scope.filters);
                 filters = addSelectFilters(filters);
                 angular.forEach(filters, function (value, key) {
-                    data = $filter(key)(data, value);
+                    value = getFlatObjects(value);
+                    if (value.length === 1) {
+                        data = $filter(key)(data, value[0]);
+                    } else {
+                        var result = [];
+                        angular.forEach(value, function(datum) {
+                            result = result.concat($filter(key)(data, datum));
+                        });
+
+                        for (var i = 0; i < result.length; i++) {
+                            for (var j = i + 1; j < result.length; j++) {
+                                if (result[i] == result[j]) {
+                                    result.splice(j--, 1);
+                                }
+                            }
+                        }
+                        data = result;
+                    }
                 });
                 angular.copy(data, filteredData);
             };

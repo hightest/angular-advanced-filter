@@ -15,5 +15,6 @@
 </div>
 <h4 ng-repeat-start="field in select">{{field.name}}</h4>
 <div class="btn-group" ng-repeat-end="">
-    <label ng-repeat="option in field.options" class="btn btn-success" ng-model="field.selected" btn-radio="option" uncheckable>{{option.name}}</label>
+    <label ng-repeat="option in field.options" class="btn btn-success" ng-model="option.selected" btn-radio="1" btn-checkbox>{{option.name}}</label>
 </div>
+
