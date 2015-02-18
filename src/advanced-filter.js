@@ -7,7 +7,7 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
             htAdvancedFilter: '='
         },
         templateUrl: 'advanced-filter.html',
-        controller: function($scope, $filter) {
+        controller: function($scope, $filter, $timeout) {
             var self = this;
             var settings = $scope.htAdvancedFilter;
             var elements = settings.data;
@@ -111,7 +111,15 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                 return elements;
             };
 
+            var timeoutPromise;
             var filterData = function() {
+                if (timeoutPromise) {
+                    $timeout.cancel(timeoutPromise);
+                }
+                timeoutPromise = $timeout(filter, 500);
+            };
+
+            var filter = function() {
                 var data = angular.copy(elements);
                 var filters = transformFilter($scope.filters);
                 filters = addSelectFilters(filters);
@@ -138,10 +146,10 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                 angular.copy(data, filteredData);
             };
 
+
             $scope.$watch('filters', function(newValue, oldValue) {
                 if (oldValue == newValue)
                     return;
-
                 filterData();
             }, true);
 
