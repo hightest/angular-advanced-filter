@@ -163,7 +163,7 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                 $scope.filters.splice(index, 1);
             };
 
-            filterData();
+            filter();
         }
     };
 })
