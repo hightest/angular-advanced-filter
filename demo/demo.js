@@ -1,27 +1,28 @@
 angular.module('demo', ['ht.advanced-filter']).controller('DemoCtrl', function ($scope) {
     $scope.clients = [
-        {name: "Moroni", age: 50},
-        {name: "Tiancum", age: 43},
-        {name: "Jacob", age: 27},
-        {name: "Nephi", age: 29},
-        {name: "Enos", age: 34},
-        {name: "Tiancum", age: 43},
-        {name: "Jacob", age: 27},
-        {name: "Nephi", age: 29},
-        {name: "Enos", age: 34},
-        {name: "Tiancum", age: 43},
-        {name: "Jacob", age: 27},
-        {name: "Nephi", age: 29},
-        {name: "Enos", age: 34},
-        {name: "Tiancum", age: 43},
-        {name: "Jacob", age: 27},
-        {name: "Nephi", age: 29},
-        {name: "Enos", age: 34}
+        {name: "Moroni", age: 50, details: {nick: 'mike_p98'}},
+        {name: "Tiancum", age: 43, details: {nick: 'adam'}},
+        {name: "Jacob", age: 27, details: {nick: 'elephoante'}},
+        {name: "Nephi", age: 29, details: {nick: 'kornlos'}},
+        {name: "Enos", age: 34, details: {nick: 'coc'}},
+        {name: "Tiancum", age: 43, details: {nick: 'cesdr'}},
+        {name: "Jacob", age: 27, details: {nick: 'mike_pl98'}},
+        {name: "Nephi", age: 29, details: {nick: 'mike_pl98'}},
+        {name: "Enos", age: 34, details: {nick: 'mike_pl98'}},
+        {name: "Tiancum", age: 43, details: {nick: 'mike_pl98'}},
+        {name: "Jacob", age: 27, details: {nick: 'mike_pl98'}},
+        {name: "Nephi", age: 29, details: {nick: 'mike_pl98'}},
+        {name: "Enos", age: 34, details: {nick: 'mike_pl98'}},
+        {name: "Tiancum", age: 43, details: {nick: 'mike_pl98'}},
+        {name: "Jacob", age: 27, details: {nick: 'mike_pl98'}},
+        {name: "Nephi", age: 29, details: {nick: 'mike_pl98'}},
+        {name: "Enos", age: 34, details: {nick: 'mike_pl98'}}
     ];
     $scope.filterSettings = {
         fields: [
             {name: "Imię", value: "name"},
-            {name: "Wiek", value: "age"}
+            {name: "Wiek", value: "age"},
+            {name: "Nick", value: "details.nick"}
         ],
         data: $scope.clients,
         filteredData: [],

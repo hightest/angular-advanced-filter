@@ -119,6 +119,24 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                 timeoutPromise = $timeout(filter, 500);
             };
 
+            var buildObject = function(key, value) {
+                if (key.length === 0) return '"' + value + '"';
+
+                var index = key.indexOf('.');
+                var currentKey = key.split('.', 1)[0];
+                var nextKey = '';
+                if (index !== -1) nextKey = key.substr(index + 1);
+
+                return '{"' + currentKey + '":' + buildObject(nextKey, value) + '}';
+            };
+
+            var convertValue = function(object) {
+                var key = Object.keys(object)[0];
+                var value = object[key];
+
+                return JSON.parse(buildObject(key, value));
+            };
+
             var filter = function() {
                 var data = angular.copy(elements);
                 var filters = transformFilter($scope.filters);
@@ -126,6 +144,7 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
                 angular.forEach(filters, function (value, key) {
                     value = getFlatObjects(value);
                     if (value.length === 1) {
+                        value[0] = convertValue(value[0]);
                         data = $filter(key)(data, value[0]);
                     } else {
                         var result = [];
