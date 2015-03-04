@@ -1,7 +1,7 @@
 /*!
  * angular-ht-advanced-filter
  * https://github.com/hightest/angular-advanced-filter
- * Version: 0.0.1 - 2015-03-04T09:19:32.403Z
+ * Version: 0.0.1 - 2015-03-04T09:37:03.476Z
  * License: 
  */
 
@@ -229,7 +229,6 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
 
 .directive('htFocus', function() {
     return function (scope, element) {
-        console.log(element);
         element[0].focus();
     }     ;
 });

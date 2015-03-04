@@ -221,7 +221,6 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
 
 .directive('htFocus', function() {
     return function (scope, element) {
-        console.log(element);
         element[0].focus();
     }     ;
 });
