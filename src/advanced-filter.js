@@ -217,4 +217,11 @@ angular.module('ht.advanced-filter', ['ui.bootstrap'])
             return false;
         });
     };
+})
+
+.directive('htFocus', function() {
+    return function (scope, element) {
+        console.log(element);
+        element[0].focus();
+    }     ;
 });
