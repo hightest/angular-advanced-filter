@@ -1,4 +1,4 @@
-angular.module('demo', ['ht.advanced-filter']).controller('DemoCtrl', function ($scope) {
+angular.module('demo', ['ht.advanced-filter', 'ht.table']).controller('DemoCtrl', function ($scope) {
     $scope.clients = [
         {name: "Moroni", age: 50, details: {nick: 'mike_p98'}},
         {name: "Tiancum", age: 43, details: {nick: 'adam'}},
@@ -18,14 +18,18 @@ angular.module('demo', ['ht.advanced-filter']).controller('DemoCtrl', function (
         {name: "Nephi", age: 29, details: {nick: 'mike_pl98'}},
         {name: "Enos", age: 34, details: {nick: 'mike_pl98'}}
     ];
+    var fields = [
+        {name: "Imię", value: "name"},
+        {name: "Wiek", value: "age"},
+        {name: "Nick", value: "details.nick"}
+    ];
+
+    var filtered = [];
+
     $scope.filterSettings = {
-        fields: [
-            {name: "Imię", value: "name"},
-            {name: "Wiek", value: "age"},
-            {name: "Nick", value: "details.nick"}
-        ],
+        fields: fields,
         data: $scope.clients,
-        filteredData: [],
+        filteredData: filtered,
         select: [
             {
                 name: "W wieku",
@@ -38,5 +42,10 @@ angular.module('demo', ['ht.advanced-filter']).controller('DemoCtrl', function (
         filters: [
             {field: "age", value: "50", filter: "filter"}
         ]
+    };
+
+    $scope.tableSettings = {
+        data: filtered,
+        fields: fields
     };
 });

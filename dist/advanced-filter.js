@@ -1,7 +1,7 @@
 /*!
  * angular-ht-advanced-filter
  * https://github.com/hightest/angular-advanced-filter
- * Version: 0.0.1 - 2015-02-25T11:10:50.262Z
+ * Version: 0.0.1 - 2015-03-04T09:19:32.403Z
  * License: 
  */
 

@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="https://rawgit.com/hightest/angular-ng-table/master/dist/ht-table.min.css" />
 </head>
 <body ng-controller="DemoCtrl">
 <div ht-advanced-filter="filterSettings"></div>
 <div>
-    {{filterSettings.filteredData}}
+    <div ht-table="tableSettings"></div>
 </div>
 <script src="../bower_components/jquery/dist/jquery.js"></script>
 <script src="../bower_components/angular/angular.js"></script>
 <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 <script src="../dist/advanced-filter.js"></script>
+<script type="text/javascript" src="https://rawgit.com/hightest/angular-ng-table/master/dist/ht-table.min.js"></script>
 <script src="demo.js"></script>
 </body>
 </html>
