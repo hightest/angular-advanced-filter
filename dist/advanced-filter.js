@@ -1,236 +1,264 @@
 /*!
  * angular-ht-advanced-filter
  * https://github.com/hightest/angular-advanced-filter
- * Version: 0.0.1 - 2015-03-04T09:37:03.476Z
+ * Version: 0.0.1 - 2015-03-05T15:42:56.955Z
  * License: 
  */
 
 
-angular.module('ht.advanced-filter', ['ui.bootstrap'])
+(function() {
+    function FilterController($scope, $filter, $timeout) {
+        var self = this;
+        var settings = $scope.htAdvancedFilter;
+        var elements = settings.data;
+        var filteredData = settings.filteredData;
 
-.directive('htAdvancedFilter', function() {
-    return {
-        require: '^ngModel',
-        scope: {
-            htAdvancedFilter: '='
-        },
-        templateUrl: 'advanced-filter.html',
-        controller: function($scope, $filter, $timeout) {
-            var self = this;
-            var settings = $scope.htAdvancedFilter;
-            var elements = settings.data;
-            var filteredData = settings.filteredData;
-            $scope.fields = [{name: "Wszędzie", value: "$"}];
-            $scope.fields = $scope.fields.concat(settings.fields);
-            $scope.select = settings.select;
-            $scope.filters = angular.isDefined(settings.filters) ? settings.filters : [];
+        self.fields = [{name: "Wszędzie", value: "$"}];
+        self.fields = self.fields.concat(settings.fields);
+        self.select = settings.select;
+        self.filters = angular.isDefined(settings.filters) ? settings.filters : [];
 
-            $scope.filterTypes = [
-                {
-                    'name': 'Szukaj w',
-                    'value': 'filter'
-                },
-                {
-                    'name': 'Mniejszy od',
-                    'value': 'lessThanOrEqualTo'
-                },
-                {
-                    'name': 'Większy od',
-                    'value': 'greaterThanOrEqualTo'
-                }
-            ];
+        self.filterTypes = [
+            {
+                'name': 'Szukaj w',
+                'value': 'filter'
+            },
+            {
+                'name': 'Mniejszy od',
+                'value': 'lessThanOrEqualTo'
+            },
+            {
+                'name': 'Większy od',
+                'value': 'greaterThanOrEqualTo'
+            }
+        ];
 
-            $scope.add = function() {
-                $scope.filters.push({
-                    filter: $scope.filterTypes[0].value,
-                    field: '$',
-                    value: ''
-                });
-            };
+        self.add = add;
+        self.update = update;
+        self.remove = remove;
 
-            $scope.$watch(function() {return elements;}, function(newVal, oldVal) {
-                if (newVal == oldVal)
-                    return;
-                filterData();
-            }, true);
+        filter();
 
-            var transformFilter = function (filters) {
-                var result = {};
-                angular.forEach(filters, function(filter) {
-                    if (filter.value.length) {
-                        if (angular.isUndefined(result[filter.filter])) {
-                            result[filter.filter] = {};
-                        }
-                        if (angular.isDefined(result[filter.filter][filter.field])) {
-                            if (!Array.isArray(result[filter.filter][filter.field])) {
-                                result[filter.filter][filter.field] = [result[filter.filter][filter.field]];
-                            }
-                            result[filter.filter][filter.field].push(filter.value);
-                        } else {
-                            result[filter.filter][filter.field] = filter.value;
-                        }
+
+        $scope.$watch(function() {return elements;}, function(newVal, oldVal) {
+            if (newVal == oldVal)
+                return;
+            filterData();
+        }, true);
+
+        function transformFilter(filters) {
+            var result = {};
+
+            var count = filters.length;
+            for (var i = 0; i < count; ++i) {
+                var filter = filters[i];
+
+                if (filter.value.length) {
+                    if (angular.isUndefined(result[filter.filter])) {
+                        result[filter.filter] = {};
                     }
-                });
-
-                return result;
-            };
-
-            var addSelectFilters = function(filters) {
-                var selectFilters = $scope.select;
-
-                angular.forEach(selectFilters, function(filter) {
-                    angular.forEach(filter.options, function(option) {
-                        if (angular.isDefined(option.selected) && option.selected) {
-                            var filterName = option.type;
-                            var filterField = option.field;
-                            var filterValue = option.value;
-
-                            if (!angular.isDefined(filters[filterName])) {
-                                filters[filterName] = {};
-                            }
-                            if (angular.isDefined(filters[filterName][filterField]) && (filters[filterName][filterField].length > 0 || angular.isNumber(filters[filterName][filterField]))) {
-                                if (!Array.isArray(filters[filterName][filterField])) {
-                                    filters[filterName][filterField] = [filters[filterName][filterField]];
-                                }
-                                filters[filterName][filterField].push(filterValue);
-                            } else {
-                                filters[filterName][filterField] = filterValue;
-                            }
+                    if (angular.isDefined(result[filter.filter][filter.field])) {
+                        if (!Array.isArray(result[filter.filter][filter.field])) {
+                            result[filter.filter][filter.field] = [result[filter.filter][filter.field]];
                         }
-                    });
-                });
-                return filters;
-            };
-
-            var getFlatObjects = function (object) {
-                var elements = [];
-                angular.forEach(object, function(value, key) {
-                    if (Array.isArray(value)) {
-                        angular.forEach(value, function(datum) {
-                            var flatObject = angular.copy(object);
-                            flatObject[key] = datum;
-                            elements = elements.concat(getFlatObjects(flatObject));
-                        });
-                    }
-                });
-                if (elements.length === 0) {
-                    elements.push(object);
-                }
-                return elements;
-            };
-
-            var timeoutPromise;
-            var filterData = function() {
-                if (timeoutPromise) {
-                    $timeout.cancel(timeoutPromise);
-                }
-                timeoutPromise = $timeout(filter, 500);
-            };
-
-            var buildObject = function(key, value) {
-                if (key.length === 0) return '"' + value + '"';
-
-                var index = key.indexOf('.');
-                var currentKey = key.split('.', 1)[0];
-                var nextKey = '';
-                if (index !== -1) nextKey = key.substr(index + 1);
-
-                return '{"' + currentKey + '":' + buildObject(nextKey, value) + '}';
-            };
-
-            var convertValue = function(object) {
-                var key = Object.keys(object)[0];
-                var value = object[key];
-
-                return JSON.parse(buildObject(key, value));
-            };
-
-            var filter = function() {
-                var data = angular.copy(elements);
-                var filters = transformFilter($scope.filters);
-                filters = addSelectFilters(filters);
-                angular.forEach(filters, function (value, key) {
-                    value = getFlatObjects(value);
-                    if (value.length === 1) {
-                        value[0] = convertValue(value[0]);
-                        data = $filter(key)(data, value[0]);
+                        result[filter.filter][filter.field].push(filter.value);
                     } else {
-                        var result = [];
-                        angular.forEach(value, function(datum) {
-                            result = result.concat($filter(key)(data, datum));
-                        });
+                        result[filter.filter][filter.field] = filter.value;
+                    }
+                }
+            }
 
-                        for (var i = 0; i < result.length; i++) {
-                            for (var j = i + 1; j < result.length; j++) {
-                                if (result[i] == result[j]) {
-                                    result.splice(j--, 1);
-                                }
+            return result;
+        }
+
+        function addSelectFilters(filters) {
+            var selectFilters = self.select;
+            var countFilters = selectFilters.length;
+
+            for (var i = 0; i < countFilters; ++i) {
+                var filter = selectFilters[i];
+                var countOptions = filter.options.length;
+
+                for (var j = 0; j < countOptions; ++j) {
+                    var option = filter.options[j];
+
+                    if (angular.isDefined(option.selected) && option.selected) {
+                        var filterName = option.type;
+                        var filterField = option.field;
+                        var filterValue = option.value;
+
+                        if (!angular.isDefined(filters[filterName])) {
+                            filters[filterName] = {};
+                        }
+                        if (angular.isDefined(filters[filterName][filterField]) && (filters[filterName][filterField].length > 0 || angular.isNumber(filters[filterName][filterField]))) {
+                            if (!Array.isArray(filters[filterName][filterField])) {
+                                filters[filterName][filterField] = [filters[filterName][filterField]];
+                            }
+                            filters[filterName][filterField].push(filterValue);
+                        } else {
+                            filters[filterName][filterField] = filterValue;
+                        }
+                    }
+                }
+            }
+
+            return filters;
+        }
+
+        function getFlatObjects(object) {
+            var elements = [];
+            angular.forEach(object, function(value, key) {
+                if (Array.isArray(value)) {
+                    angular.forEach(value, function(datum) {
+                        var flatObject = angular.copy(object);
+                        flatObject[key] = datum;
+                        elements = elements.concat(getFlatObjects(flatObject));
+                    });
+                }
+            });
+            if (elements.length === 0) {
+                elements.push(object);
+            }
+            return elements;
+        }
+
+        var timeout = null;
+        function filterData() {
+            if (timeout) {
+                $timeout.cancel(timeout);
+            }
+            timeout = $timeout(filter, 500);
+        }
+
+        function buildObject(key, value) {
+            if (key.length === 0) return '"' + value + '"';
+
+            var index = key.indexOf('.');
+            var currentKey = key.split('.', 1)[0];
+            var nextKey = '';
+            if (index !== -1) nextKey = key.substr(index + 1);
+
+            return '{"' + currentKey + '":' + buildObject(nextKey, value) + '}';
+        }
+
+        function convertValue(object) {
+            var key = Object.keys(object)[0];
+            var value = object[key];
+
+            return JSON.parse(buildObject(key, value));
+        }
+
+        function filter() {
+            var data = elements.slice();
+            var filters = transformFilter(self.filters);
+            filters = addSelectFilters(filters);
+
+            for (var key in filters) {
+                if (!filters.hasOwnProperty(key)) continue;
+
+                var value = filters[key];
+                value = getFlatObjects(value);
+                if (value.length === 1) {
+                    value[0] = convertValue(value[0]);
+                    data = $filter(key)(data, value[0]);
+                } else {
+                    var result = [];
+                    var valueLength = value.length;
+                    for (var i = 0; i < valueLength; i++) {
+                        result = result.concat($filter(key)(data, value[i]));
+                    }
+
+                    for (i = 0; i < result.length; i++) {
+                        for (var j = i + 1; j < result.length; j++) {
+                            if (result[i] == result[j]) {
+                                result.splice(j--, 1);
                             }
                         }
-                        data = result;
                     }
-                });
-                angular.copy(data, filteredData);
-            };
+                    data = result;
+                }
+            }
+
+            filteredData.length = 0;
+            for (var l = 0; l < data.length; l++) {
+                filteredData.push(data[l]);
+            }
+        }
 
 
-            $scope.$watch('filters', function(newValue, oldValue) {
-                if (oldValue == newValue)
-                    return;
-                filterData();
-            }, true);
+        function update() {
+            filterData();
+        }
 
-            $scope.$watch('select', function(newVal, oldVal) {
-                if (oldVal == newVal)
-                    return;
-                filterData();
-            }, true);
-
-            $scope.remove = function(index) {
-                $scope.filters.splice(index, 1);
-            };
-
+        function remove(index) {
+            self.filters.splice(index, 1);
             filter();
         }
-    };
-})
 
-.filter('greaterThanOrEqualTo', function(filterFilter) {
-    return function(input, minValue) {
-        return filterFilter(input, minValue, function(actual, expected) {
-            var isNumber = function(value) {
-                return !isNaN(parseFloat(value));
-            };
+        function add() {
+            self.filters.push({
+                filter: self.filterTypes[0].value,
+                field: '$',
+                value: ''
+            });
+        }
+    }
 
-            if (isNumber(actual) && isNumber(expected)) {
-                return actual >= expected;
-            }
+    function FilterDirective() {
+        return {
+            require: '^ngModel',
+            scope: {
+                htAdvancedFilter: '='
+            },
+            controllerAs: 'filter',
+            templateUrl: 'advanced-filter.html',
+            controller: FilterController
+        };
+    }
 
-            return false;
-        });
-    };
-})
+    function GreaterThanOrEqualToFilter(filterFilter) {
+        return function(input, minValue) {
+            return filterFilter(input, minValue, function(actual, expected) {
+                var isNumber = function(value) {
+                    return !isNaN(parseFloat(value));
+                };
 
-.filter('lessThanOrEqualTo', function(filterFilter) {
-    return function(input, minValue) {
-        return filterFilter(input, minValue, function(actual, expected) {
-            var isNumber = function(value) {
-                return !isNaN(parseFloat(value));
-            };
+                if (isNumber(actual) && isNumber(expected)) {
+                    return actual >= expected;
+                }
 
-            if (isNumber(actual) && isNumber(expected)) {
-                return actual <= expected;
-            }
+                return false;
+            });
+        };
+    }
 
-            return false;
-        });
-    };
-})
+    function LessThanOrEqualToFilter(filterFilter) {
+        return function(input, minValue) {
+            return filterFilter(input, minValue, function(actual, expected) {
+                var isNumber = function(value) {
+                    return !isNaN(parseFloat(value));
+                };
 
-.directive('htFocus', function() {
-    return function (scope, element) {
-        element[0].focus();
-    }     ;
-});
+                if (isNumber(actual) && isNumber(expected)) {
+                    return actual <= expected;
+                }
 
-angular.module("ht.advanced-filter").run(["$templateCache", function($templateCache) {$templateCache.put("advanced-filter.html","<div><div class=\"form-inline\" ng-repeat=\"filter in filters\"><div class=\"form-group\"><select class=\"form-control\" ng-model=\"filter.filter\" ng-options=\"filterType.value as filterType.name for filterType in filterTypes\"></select></div><div class=\"form-group\"><select class=\"form-control\" ng-model=\"filter.field\" ng-options=\"field.value as field.name for field in fields\"></select></div><div class=\"form-group\"><input class=\"form-control\" type=\"text\" ng-model=\"filter.value\" ht-focus=\"\"></div><div class=\"form-group\"><span class=\"glyphicon glyphicon-remove-circle\" ng-click=\"remove($index)\"></span></div></div><button type=\"button\" class=\"btn btn-default\" ng-click=\"add()\">Dodaj filtr</button></div><h4 ng-repeat-start=\"field in select\">{{field.name}}</h4><div class=\"btn-group\" ng-repeat-end=\"\"><label ng-repeat=\"option in field.options\" class=\"btn btn-success\" ng-model=\"option.selected\" btn-radio=\"1\" btn-checkbox=\"\">{{option.name}}</label></div>");}]);
+                return false;
+            });
+        };
+    }
+
+    function FocusDirective() {
+        return function (scope, element) {
+            element[0].focus();
+        };
+    }
+
+    angular.module('ht.advanced-filter', ['ui.bootstrap'])
+        .directive('htAdvancedFilter', FilterDirective)
+        .directive('htFocus', FocusDirective)
+        .filter('greaterThanOrEqualTo', GreaterThanOrEqualToFilter)
+        .filter('lessThanOrEqualTo', LessThanOrEqualToFilter);
+})();
+
+angular.module("ht.advanced-filter").run(["$templateCache", function($templateCache) {$templateCache.put("advanced-filter.html","<div><div class=\"form-inline\" ng-repeat=\"object in filter.filters\"><div class=\"form-group\"><select class=\"form-control\" ng-model=\"object.filter\" ng-change=\"filter.update()\" ng-options=\"filterType.value as filterType.name for filterType in filter.filterTypes\"></select></div><div class=\"form-group\"><select class=\"form-control\" ng-model=\"object.field\" ng-change=\"filter.update()\" ng-options=\"field.value as field.name for field in filter.fields\"></select></div><div class=\"form-group\"><input class=\"form-control\" ng-change=\"filter.update()\" type=\"text\" ng-model=\"object.value\" ht-focus=\"\"></div><div class=\"form-group\"><span class=\"glyphicon glyphicon-remove-circle\" ng-click=\"filter.remove($index)\"></span></div></div><button type=\"button\" class=\"btn btn-default\" ng-click=\"filter.add()\">Dodaj filtr</button></div><h4 ng-repeat-start=\"field in filter.select\">{{field.name}}</h4><div class=\"btn-group\" ng-repeat-end=\"\"><label ng-repeat=\"option in field.options\" class=\"btn btn-success\" ng-change=\"filter.update()\" ng-model=\"option.selected\" btn-radio=\"1\" btn-checkbox=\"\">{{option.name}}</label></div>");}]);

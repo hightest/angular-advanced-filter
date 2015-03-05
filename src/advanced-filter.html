@@ -1,20 +1,30 @@
 <div>
-<div class="form-inline" ng-repeat="filter in filters">
+<div class="form-inline" ng-repeat="object in filter.filters">
     <div class="form-group">
-        <select class="form-control" ng-model="filter.filter" ng-options="filterType.value as filterType.name for filterType in filterTypes" />
+        <select class="form-control"
+                ng-model="object.filter"
+                ng-change="filter.update()"
+                ng-options="filterType.value as filterType.name for filterType in filter.filterTypes"></select>
     </div>
     <div class="form-group">
-        <select class="form-control" ng-model="filter.field" ng-options="field.value as field.name for field in fields" />
+        <select class="form-control"
+                ng-model="object.field"
+                ng-change="filter.update()"
+                ng-options="field.value as field.name for field in filter.fields"></select>
     </div>
     <div class="form-group">
-        <input class="form-control" type="text" ng-model="filter.value" ht-focus />
+        <input class="form-control"
+               ng-change="filter.update()"
+               type="text"
+               ng-model="object.value"
+               ht-focus />
     </div>
-    <div class="form-group"><span class="glyphicon glyphicon-remove-circle" ng-click="remove($index)"></span></div>
+    <div class="form-group"><span class="glyphicon glyphicon-remove-circle" ng-click="filter.remove($index)"></span></div>
 </div>
-<button type="button" class="btn btn-default" ng-click="add()">Dodaj filtr</button>
+<button type="button" class="btn btn-default" ng-click="filter.add()">Dodaj filtr</button>
 </div>
-<h4 ng-repeat-start="field in select">{{field.name}}</h4>
+<h4 ng-repeat-start="field in filter.select">{{field.name}}</h4>
 <div class="btn-group" ng-repeat-end="">
-    <label ng-repeat="option in field.options" class="btn btn-success" ng-model="option.selected" btn-radio="1" btn-checkbox>{{option.name}}</label>
+    <label ng-repeat="option in field.options" class="btn btn-success" ng-change="filter.update()" ng-model="option.selected" btn-radio="1" btn-checkbox>{{option.name}}</label>
 </div>
 
