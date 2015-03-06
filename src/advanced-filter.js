@@ -7,7 +7,7 @@
 
         self.fields = [{name: "Wszędzie", value: "$"}];
         self.fields = self.fields.concat(settings.fields);
-        self.select = settings.select;
+        self.select = angular.isDefined(settings.select) ? settings.select : [];
         self.filters = angular.isDefined(settings.filters) ? settings.filters : [];
 
         self.filterTypes = [

@@ -1,7 +1,7 @@
 /*!
  * angular-ht-advanced-filter
  * https://github.com/hightest/angular-advanced-filter
- * Version: 0.0.1 - 2015-03-05T15:42:56.955Z
+ * Version: 0.0.1 - 2015-03-06T15:41:00.425Z
  * License: 
  */
 
@@ -15,7 +15,7 @@
 
         self.fields = [{name: "Wszędzie", value: "$"}];
         self.fields = self.fields.concat(settings.fields);
-        self.select = settings.select;
+        self.select = angular.isDefined(settings.select) ? settings.select : [];
         self.filters = angular.isDefined(settings.filters) ? settings.filters : [];
 
         self.filterTypes = [

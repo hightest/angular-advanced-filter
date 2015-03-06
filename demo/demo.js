@@ -1,6 +1,6 @@
 angular.module('demo', ['ht.advanced-filter', 'ht.table']).controller('DemoCtrl', function ($scope, $timeout) {
     $scope.clients = [];
-    for(var i = 0; i < 20000; i++) {
+    for(var i = 0; i < 200; i++) {
         $scope.clients.push({
             name: 'name' + i,
             age: i,
