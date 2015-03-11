@@ -1,7 +1,7 @@
 /*!
  * angular-ht-advanced-filter
  * https://github.com/hightest/angular-advanced-filter
- * Version: 0.0.1 - 2015-03-06T15:41:00.425Z
+ * Version: 0.0.1 - 2015-03-11T12:08:08.033Z
  * License: 
  */
 
@@ -130,22 +130,36 @@
             timeout = $timeout(filter, 500);
         }
 
-        function buildObject(key, value) {
-            if (key.length === 0) return '"' + value + '"';
-
+        function buildObject(key, value, object, objectKey) {
             var index = key.indexOf('.');
-            var currentKey = key.split('.', 1)[0];
-            var nextKey = '';
-            if (index !== -1) nextKey = key.substr(index + 1);
 
-            return '{"' + currentKey + '":' + buildObject(nextKey, value) + '}';
+            if (index === -1) {
+                if (objectKey) {
+                    if (typeof object[objectKey] === 'undefined')  object[objectKey] = {};
+                    object[objectKey][key] = value;
+                } else {
+                    object[key] = value;
+                }
+            } else {
+                var currentKey = key.split('.', 1)[0];
+                var nextKey = key.substr(index + 1);
+                if (objectKey) {
+                    if (typeof object[objectKey] === 'undefined') object[objectKey] = {};
+                    object = object[objectKey];
+                }
+                buildObject(nextKey, value, object, currentKey);
+            }
         }
 
         function convertValue(object) {
-            var key = Object.keys(object)[0];
-            var value = object[key];
+            var result = {};
+            var keys = Object.keys(object);
 
-            return JSON.parse(buildObject(key, value));
+            for (var i = 0, count = keys.length; i < count; i++) {
+                buildObject(keys[i], object[keys[i]], result);
+            }
+
+            return result;
         }
 
         function filter() {
