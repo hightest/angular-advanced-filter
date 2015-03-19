@@ -31,6 +31,10 @@
 
         filter();
 
+        if (settings.filterActive) {
+            add();
+        }
+
 
         $scope.$watch(function() {return elements;}, function(newVal, oldVal) {
             if (newVal == oldVal)

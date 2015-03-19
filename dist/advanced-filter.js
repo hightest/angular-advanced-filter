@@ -1,7 +1,7 @@
 /*!
  * angular-ht-advanced-filter
  * https://github.com/hightest/angular-advanced-filter
- * Version: 0.0.1 - 2015-03-11T12:08:08.033Z
+ * Version: 0.0.1 - 2015-03-19T15:37:05.884Z
  * License: 
  */
 
@@ -38,6 +38,10 @@
         self.remove = remove;
 
         filter();
+
+        if (settings.filterActive) {
+            add();
+        }
 
 
         $scope.$watch(function() {return elements;}, function(newVal, oldVal) {

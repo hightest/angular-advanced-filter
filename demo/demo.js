@@ -50,7 +50,8 @@ angular.module('demo', ['ht.advanced-filter', 'ht.table']).controller('DemoCtrl'
         ],
         filters: [
             {field: "age", value: "50", filter: "filter"}
-        ]
+        ],
+        filterActive: true
     };
 
     $scope.tableSettings = {
