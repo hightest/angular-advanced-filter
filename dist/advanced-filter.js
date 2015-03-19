@@ -1,7 +1,7 @@
 /*!
  * angular-ht-advanced-filter
  * https://github.com/hightest/angular-advanced-filter
- * Version: 0.0.1 - 2015-03-19T15:37:05.884Z
+ * Version: 0.0.1 - 2015-03-19T15:41:18.968Z
  * License: 
  */
 
@@ -39,7 +39,7 @@
 
         filter();
 
-        if (settings.filterActive) {
+        if (!settings.disableDefaultFilter) {
             add();
         }
 

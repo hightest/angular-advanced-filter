@@ -31,7 +31,7 @@
 
         filter();
 
-        if (settings.filterActive) {
+        if (!settings.disableDefaultFilter) {
             add();
         }
 
