@@ -9,6 +9,7 @@
         self.fields = self.fields.concat(settings.fields);
         self.select = angular.isDefined(settings.select) ? settings.select : [];
         self.filters = angular.isDefined(settings.filters) ? settings.filters : [];
+        var onUpdate = angular.isDefined(settings.onUpdate) ? settings.onUpdate : function() {};
 
         self.filterTypes = [
             {
@@ -170,12 +171,34 @@
                 value = getFlatObjects(value);
                 if (value.length === 1) {
                     value[0] = convertValue(value[0]);
-                    data = $filter(key)(data, value[0]);
+                    if (key == 'filter' && angular.isDefined(value[0].$) && value[0].$.length) {
+                        var oldVal = value[0].$;
+                        var vals = oldVal.split(' ');
+                        for (var k = 0; k < vals.length; k++) {
+                            value[0].$ = vals[k];
+                            data = $filter(key)(data, value[0]);
+                        }
+                    } else {
+                        data = $filter(key)(data, value[0]);
+                    }
                 } else {
                     var result = [];
+
+
                     var valueLength = value.length;
                     for (var i = 0; i < valueLength; i++) {
-                        result = result.concat($filter(key)(data, value[i]));
+                        var newData = data.slice();
+                        if (key == 'filter' && angular.isDefined(value[i].$) && value[i].$.length) {
+                            var old = value[i].$;
+                            var values = old.split(' ');
+                            for (var m = 0; m < values.length; m++) {
+                                value[i].$ = values[m];
+                                newData = $filter(key)(newData, value[i]);
+                            }
+                        } else {
+                            newData = $filter(key)(newData, value[i]);
+                        }
+                        result = result.concat(newData);
                     }
 
                     for (i = 0; i < result.length; i++) {
@@ -193,6 +216,8 @@
             for (var l = 0; l < data.length; l++) {
                 filteredData.push(data[l]);
             }
+
+            onUpdate();
         }
 
 

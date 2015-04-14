@@ -7,6 +7,9 @@ angular.module('demo', ['ht.advanced-filter', 'ht.table']).controller('DemoCtrl'
             details: {nick: 'nick' + i}
         });
     }
+
+    $scope.clients.push({name: 'Adam', age: '50'});
+    $scope.clients.push({name: 'Adam', age: '10'});
     //$scope.clients = [
     //    {name: "Moroni", age: 50, details: {nick: 'mike_p98'}},
     //    {name: "Tiancum", age: 43},
@@ -51,7 +54,10 @@ angular.module('demo', ['ht.advanced-filter', 'ht.table']).controller('DemoCtrl'
         filters: [
             {field: "age", value: "50", filter: "filter"}
         ],
-        disableDefaultFilter: false
+        disableDefaultFilter: false,
+        onUpdate: function() {
+            console.log('update');
+        }
     };
 
     $scope.tableSettings = {
